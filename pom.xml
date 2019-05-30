@@ -33,32 +33,12 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring-boot-starter</artifactId>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-starter-actuator</artifactId>-->
-		<!--</dependency>-->
 
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
-		<!--<dependency>-->
-			<!--<groupId>org.hibernate</groupId>-->
-			<!--<artifactId>hibernate-spatial</artifactId>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>org.postgresql</groupId>-->
-			<!--<artifactId>postgresql</artifactId>-->
-			<!--<scope>runtime</scope>-->
-		<!--</dependency>-->
-		<!-- https://mvnrepository.com/artifact/com.bedatadriven/jackson-datatype-jts -->
-		<!--<dependency>-->
-			<!--<groupId>com.bedatadriven</groupId>-->
-			<!--<artifactId>jackson-datatype-jts</artifactId>-->
-			<!--<version>2.4</version>-->
-		<!--</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/com.vividsolutions/jts -->
 		<dependency>

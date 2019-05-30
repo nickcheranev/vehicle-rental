@@ -31,7 +31,7 @@ public class VehicleRentedServiceTest {
 
     @Test
     public void pushToRent() {
-        VehicleRented rented = vehicleRentedService.pushToRent(14L);
+        VehicleRented rented = vehicleRentedService.pushToRent(14L, 1L);
         assertThat(rented, is(notNullValue()));
         RentalPoint currentRentalPoint =  rented.getBeginRentalPoint();
         assertThat(currentRentalPoint, is(notNullValue()));

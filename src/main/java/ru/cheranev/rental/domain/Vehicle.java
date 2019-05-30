@@ -2,6 +2,7 @@ package ru.cheranev.rental.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Data
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "id", name = "vehicle_pk"))
+@NoArgsConstructor
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_vehicle")
@@ -34,4 +36,10 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name = "vehicle_fk2"))
     private Tracker tracker;
+
+    public Vehicle(String regNumber, VehicleModel vehicleModel, Tracker tracker) {
+        this.regNumber = regNumber;
+        this.vehicleModel = vehicleModel;
+        this.tracker = tracker;
+    }
 }

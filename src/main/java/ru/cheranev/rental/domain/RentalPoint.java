@@ -1,6 +1,7 @@
 package ru.cheranev.rental.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
+@NoArgsConstructor
 public class RentalPoint {
 
     @Id
@@ -26,4 +28,9 @@ public class RentalPoint {
      * Координаты WKT
      */
     private String location;
+
+    public RentalPoint(String name, String location) {
+        this.name = name;
+        this.location = location;
+    };
 }

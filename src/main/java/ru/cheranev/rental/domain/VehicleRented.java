@@ -56,8 +56,4 @@ public class VehicleRented {
      * Для бизнес реализации необходимо заменить на статусы ТС, например: в парке, в аренде, на обслуживании, относится к другому прокату и т.п.
      */
     boolean parked;
-
-    public boolean isRented() {
-        return beginRentTime != null && endRentTime == null;
-    }
 }

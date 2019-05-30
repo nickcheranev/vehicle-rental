@@ -23,4 +23,8 @@ public class Customer {
      * ФИО заказчика
      */
     private String name;
+
+    public Customer(String name) {
+        this.name = name;
+    }
 }

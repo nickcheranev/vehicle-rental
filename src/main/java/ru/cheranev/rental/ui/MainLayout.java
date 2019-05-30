@@ -19,6 +19,7 @@ public class MainLayout extends AbstractAppRouterLayout {
 
     @Override
     protected void configure(AppLayout appLayout, AppLayoutMenu menu) {
+        setMenuItem(menu, new AppLayoutMenuItem(VaadinIcon.AUTOMATION.create(), RentalView.VIEW_TITLE, RentalView.VIEW_NAME));
         setMenuItem(menu, new AppLayoutMenuItem(VaadinIcon.CLOCK.create(), ReportAvgTimeView.VIEW_TITLE, ReportAvgTimeView.VIEW_NAME));
         setMenuItem(menu, new AppLayoutMenuItem(VaadinIcon.CHART.create(), ReportRentalHistoryView.VIEW_TITLE, ReportRentalHistoryView.VIEW_NAME));
         setMenuItem(menu, new AppLayoutMenuItem(VaadinIcon.INFO.create(), AboutView.VIEW_TITLE, AboutView.VIEW_NAME));

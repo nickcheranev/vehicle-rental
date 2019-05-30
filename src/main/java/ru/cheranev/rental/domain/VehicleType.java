@@ -1,6 +1,7 @@
 package ru.cheranev.rental.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
+@NoArgsConstructor
 public class VehicleType {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_vehicle_type")
@@ -21,4 +23,8 @@ public class VehicleType {
      * Наименование типа ТС
      */
     private String name;
+
+    public VehicleType(String name) {
+        this.name = name;
+    }
 }

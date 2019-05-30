@@ -24,8 +24,8 @@ public class VehicleRentalServiceController {
 
     @GetMapping("/push")
     @ResponseBody
-    public VehicleRented pushToRent(@RequestParam Long vehicleId) {
-        return vehicleRentedService.pushToRent(vehicleId);
+    public VehicleRented pushToRent(@RequestParam Long vehicleId, @RequestParam Long customerId) {
+        return vehicleRentedService.pushToRent(vehicleId, customerId);
     }
 
     @GetMapping("/pull")

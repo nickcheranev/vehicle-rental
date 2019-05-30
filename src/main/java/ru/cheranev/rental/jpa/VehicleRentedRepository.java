@@ -6,6 +6,8 @@ import ru.cheranev.rental.domain.RentalPoint;
 import ru.cheranev.rental.domain.Vehicle;
 import ru.cheranev.rental.domain.VehicleRented;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -29,16 +31,7 @@ public interface VehicleRentedRepository extends JpaRepository<VehicleRented, Lo
      */
     Set<VehicleRented> getAllByBeginRentTimeIsNullAndEndRentalPoint(RentalPoint rentalPoint);
 
-    // VehicleRented findFirstByIdOrderByIdDesc();
-
     VehicleRented findFirstByVehicle(Vehicle vehicle);
-
-    /**
-     * Найти актуальную запись о ТС
-     * @param vehicle ТС
-     * @return запись о ТС в точке ее текущего расположения
-     */
-    VehicleRented findFirstByVehicleOrderByIdDesc(Vehicle vehicle);
 
     /**
      * Получить перечень ТС доступных к выдаче в точке проката
@@ -54,4 +47,13 @@ public interface VehicleRentedRepository extends JpaRepository<VehicleRented, Lo
      * @return список ТС
      */
     Set<VehicleRented> findAllByParkedIsTrue();
+
+    /**
+     * Наити ТС в парке
+     * @param vehicle
+     * @return
+     */
+    Optional<VehicleRented> findByVehicleAndParkedIsTrue(Vehicle vehicle);
+
+    List<VehicleRented> findByVehicleAndParkedIsFalseOrderByIdDesc(Vehicle vehicle);
 }

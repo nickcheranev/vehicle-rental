@@ -1,6 +1,7 @@
 package ru.cheranev.rental.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
+@NoArgsConstructor
 public class VehicleModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_vehicle_model")
@@ -25,4 +27,9 @@ public class VehicleModel {
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name = "vehicle_model_fk1"))
     private VehicleType vehicleType;
+
+    public VehicleModel(String name, VehicleType vehicleType) {
+        this.name = name;
+        this.vehicleType = vehicleType;
+    }
 }

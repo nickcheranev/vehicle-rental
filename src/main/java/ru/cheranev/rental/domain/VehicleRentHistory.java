@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
+ * Реестр: Перемещение ТС во время аренды
+ *
  * @author Cheranev N.
  * created on 18.05.2019.
  */

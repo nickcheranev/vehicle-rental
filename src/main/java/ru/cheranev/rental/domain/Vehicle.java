@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
+ * Справочник Конкретное транспортное средство
+ *
  * @author Cheranev N.
  * created on 18.05.2019.
  */

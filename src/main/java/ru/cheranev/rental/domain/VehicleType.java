@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
- * Тип транспортного средства
+ * Справочник: Тип транспортного средства
  *
  * @author Cheranev N.
  * created on 18.05.2019.

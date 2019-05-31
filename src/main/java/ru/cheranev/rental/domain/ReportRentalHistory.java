@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
+ * Отчет История эксплуатации ТС
+ *
  * @author Cheranev N.
  * created on 25.05.2019.
  */

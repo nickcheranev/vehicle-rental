@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
- * Справочник Заказчики (Арендатор)
+ * Справочник Заказчик (Арендатор)
  *
  * @author Cheranev N.
  * created on 18.05.2019.

@@ -6,6 +6,8 @@ import ru.cheranev.rental.domain.ReportRentalHistory;
 import ru.cheranev.rental.domain.ReportRentalHistoryId;
 
 /**
+ * Репозиторий Истории перемещения ТС
+ *
  * @author Cheranev N.
  * created on 25.05.2019.
  */

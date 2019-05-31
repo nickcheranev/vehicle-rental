@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
- * Справочник: Пункты проката транспортных средств
+ * Справочник Пункт проката транспортных средств
  *
  * @author Cheranev N.
  * created on 18.05.2019.

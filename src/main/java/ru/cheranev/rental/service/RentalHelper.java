@@ -16,6 +16,6 @@ public class RentalHelper {
     private RentalPointRepository rentalPointRepository;
 
     public RentalPoint getHomeRentalPoint() {
-        return rentalPointRepository.findByName("Пермь №1");
+        return rentalPointRepository.findByName("Пермь");
     }
 }

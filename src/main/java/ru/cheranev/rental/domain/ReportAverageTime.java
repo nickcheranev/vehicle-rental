@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
+ * Отчет Среднее время проката
+ *
  * @author Cheranev N.
  * created on 25.05.2019.
  */

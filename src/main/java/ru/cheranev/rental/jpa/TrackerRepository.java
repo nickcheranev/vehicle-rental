@@ -6,6 +6,8 @@ import ru.cheranev.rental.domain.Tracker;
 import java.util.Optional;
 
 /**
+ * Репозиторий трекеров ТС
+ *
  * @author Cheranev N.
  * created on 18.05.2019.
  */

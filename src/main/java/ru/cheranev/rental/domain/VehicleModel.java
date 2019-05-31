@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
+ * Справочник Модель ТС
+ *
  * @author Cheranev N.
  * created on 18.05.2019.
  */

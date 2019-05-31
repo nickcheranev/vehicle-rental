@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * Репозиторий ТС в прокате
+ *
  * @author Cheranev N.
  * created on 18.05.2019.
  */
@@ -31,8 +33,6 @@ public interface VehicleRentedRepository extends JpaRepository<VehicleRented, Lo
      */
     Set<VehicleRented> getAllByBeginRentTimeIsNullAndEndRentalPoint(RentalPoint rentalPoint);
 
-    VehicleRented findFirstByVehicle(Vehicle vehicle);
-
     /**
      * Получить перечень ТС доступных к выдаче в точке проката
      *
@@ -50,10 +50,19 @@ public interface VehicleRentedRepository extends JpaRepository<VehicleRented, Lo
 
     /**
      * Наити ТС в парке
-     * @param vehicle
-     * @return
+     *
+     * @param vehicle ТС
+     * @return запись о ТС в прокате
      */
     Optional<VehicleRented> findByVehicleAndParkedIsTrue(Vehicle vehicle);
 
+    /**
+     * Получить список ТС в прокате. Первый элемент в списке - запись о текущем прокате ТС.
+     * Данное решение не подходит для промышленной реализации. Хорошим решением было бы представление статусов ТС в виде справочника
+     * с forkflow переходов между статусами. Можно рассмотреть использование BPM (business process management).
+     *
+     * @param vehicle ТС
+     * @return список
+     */
     List<VehicleRented> findByVehicleAndParkedIsFalseOrderByIdDesc(Vehicle vehicle);
 }

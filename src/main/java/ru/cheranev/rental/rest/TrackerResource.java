@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * WEB CRUD Tracker Resource
+ * REST Tracker Resource
  *
  * @author Cheranev N.
  * created on 29.05.2019.

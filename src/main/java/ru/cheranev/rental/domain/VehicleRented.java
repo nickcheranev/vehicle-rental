@@ -43,6 +43,11 @@ public class VehicleRented {
     @JoinColumn(foreignKey=@ForeignKey(name = "vehicle_rented_fk4"))
     private RentalPoint endRentalPoint;
     /**
+     * Статус ТС
+     */
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    /**
      * Дата/время выдачи в прокат
      */
     private LocalDateTime beginRentTime;
@@ -50,10 +55,4 @@ public class VehicleRented {
      * Дата/время возврата
      */
     private LocalDateTime endRentTime;
-
-    /**
-     * Признак парковки ТС в точке проката endRentalPoint
-     * Для бизнес реализации необходимо заменить на статусы ТС, например: в парке, в аренде, на обслуживании, относится к другому прокату и т.п.
-     */
-    boolean parked;
 }

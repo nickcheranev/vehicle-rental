@@ -2,6 +2,7 @@ package ru.cheranev.rental.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.cheranev.rental.domain.Status;
 import ru.cheranev.rental.domain.RentalPoint;
 import ru.cheranev.rental.domain.Vehicle;
 import ru.cheranev.rental.domain.VehicleRented;
@@ -43,26 +44,16 @@ public interface VehicleRentedRepository extends JpaRepository<VehicleRented, Lo
     Set<VehicleRented> getAvailableOnRentalPoint(RentalPoint rentalPoint);
 
     /**
-     * Получить все доступные выдаче
+     * Получить все соответствующие определенному статусу
      * @return список ТС
      */
-    Set<VehicleRented> findAllByParkedIsTrue();
+    List<VehicleRented> findAllByStatus(Status status);
 
     /**
-     * Наити ТС в парке
+     * Наити ТС с определенным статусом
      *
      * @param vehicle ТС
-     * @return запись о ТС в прокате
+     * @return запись о прокате ТС с определенным статусом
      */
-    Optional<VehicleRented> findByVehicleAndParkedIsTrue(Vehicle vehicle);
-
-    /**
-     * Получить список ТС в прокате. Первый элемент в списке - запись о текущем прокате ТС.
-     * Данное решение не подходит для промышленной реализации. Хорошим решением было бы представление статусов ТС в виде справочника
-     * с forkflow переходов между статусами. Можно рассмотреть использование BPM (business process management).
-     *
-     * @param vehicle ТС
-     * @return список
-     */
-    List<VehicleRented> findByVehicleAndParkedIsFalseOrderByIdDesc(Vehicle vehicle);
+    Optional<VehicleRented> findByVehicleAndStatus(Vehicle vehicle, Status status);
 }

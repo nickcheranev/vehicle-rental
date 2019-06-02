@@ -29,4 +29,5 @@ public class ReportRentalHistory {
     private String customerName;
     private LocalDateTime beginRentTime;
     private LocalDateTime endRentTime;
+    private String history;
 }

@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.cheranev.rental.domain.RentalPoint;
 import ru.cheranev.rental.domain.VehicleRented;
 
-import java.util.Set;
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNot.not;
@@ -27,11 +27,11 @@ import static org.junit.Assert.assertThat;
 public class VehicleRentedServiceTest {
 
     @Autowired
-    private VehicleRentalService vehicleRentedService;
+    private RentalServiceImpl vehicleRentedService;
 
     @Test
     public void pushToRent() {
-        VehicleRented rented = vehicleRentedService.pushToRent(14L, 1L);
+        VehicleRented rented = vehicleRentedService.pushToRent(14L, 1L, null);
         assertThat(rented, is(notNullValue()));
         RentalPoint currentRentalPoint =  rented.getBeginRentalPoint();
         assertThat(currentRentalPoint, is(notNullValue()));
@@ -39,15 +39,7 @@ public class VehicleRentedServiceTest {
 
     @Test
     public void pullFromRent() {
-        VehicleRented rented = vehicleRentedService.pullFromRent(14L, 4L);
+        VehicleRented rented = vehicleRentedService.pullFromRent(14L, 4L, null);
         assertThat(rented, is(notNullValue()));
-    }
-
-    @Test
-    public void getAvailableForRent() {
-        RentalPoint rentalPoint = new RentalPoint();
-        rentalPoint.setId(4L);
-        Set<VehicleRented> vehicleRentedSet = vehicleRentedService.getAvailableForRent(rentalPoint);
-        assertThat(vehicleRentedSet, hasSize(equalTo(1)));
     }
 }

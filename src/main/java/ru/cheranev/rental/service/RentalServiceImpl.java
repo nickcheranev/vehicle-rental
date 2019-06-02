@@ -10,16 +10,17 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static ru.cheranev.rental.common.Const.*;
 
 /**
+ * Сервис бизнес операций
+ *
  * @author Cheranev N.
  * created on 19.05.2019.
  */
 @Service
-public class VehicleRentalService {
+public class RentalServiceImpl implements RentalService {
 
     @Autowired
     private VehicleRentedRepository vehicleRentedRepository;
@@ -34,14 +35,15 @@ public class VehicleRentalService {
 
     /**
      * Выдать в аренду ТС
-     * 1. Установить время выдачи
-     * 2. Добавить в историю запись о выдаче.
+     * 1. Установить заказчика
+     * 2. Установить время выдачи
+     * 3. Добавить в историю запись о выдаче.
      *
      * @param vehicleId идентификатор ТС
      * @return арендованное ТС
      */
     @Transactional
-    public VehicleRented pushToRent(Long vehicleId, Long customerId) {
+    public VehicleRented pushToRent(Long vehicleId, Long customerId, LocalDateTime beginDateTime) {
         // Найдем ТС по ид
         Optional<Vehicle> optionalVehicle = vehicleRepository.findById(vehicleId);
         if (!optionalVehicle.isPresent())
@@ -54,8 +56,8 @@ public class VehicleRentalService {
             throw new ResourceNotFoundException(MSG_NOT_FOUND_CUSTOMER_BY_ID);
         Customer customer = optionalCustomer.get();
 
-        // последняя запись о сдаче в аренду, содержит пункт проката. где находится ТС
-        Optional<VehicleRented> optionalVehicleRented = vehicleRentedRepository.findByVehicleAndParkedIsTrue(vehicle);
+        // ТС в парке
+        Optional<VehicleRented> optionalVehicleRented = vehicleRentedRepository.findByVehicleAndStatus(vehicle, Status.PARKED);
         if (!optionalVehicleRented.isPresent())
             throw new ResourceNotFoundException(MSG_NOT_FOUND_RECORD_OF_VEHICLE_RENTAL_IN_PARK);
         VehicleRented oldRented = optionalVehicleRented.get();
@@ -63,23 +65,23 @@ public class VehicleRentalService {
         // Новая запись об аренде
         VehicleRented newRented = new VehicleRented();
         // Установить время ТС, выдачи, заказчика
-        newRented.setBeginRentTime(LocalDateTime.now());
+        newRented.setBeginRentTime(beginDateTime == null ? LocalDateTime.now() : beginDateTime);
         newRented.setVehicle(vehicle);
         newRented.setCustomer(customer);
         // пункт проката выдачи
         newRented.setBeginRentalPoint(oldRented.getEndRentalPoint());
-        newRented.setParked(false);
+        newRented.setStatus(Status.RENTED);
         vehicleRentedRepository.save(newRented);
 
-        // для предыдущей записи об аренде снять признак парковки
-        oldRented.setParked(false);
+        // закрыть предыдущую запись об аренде
+        oldRented.setStatus(Status.CLOSED);
         vehicleRentedRepository.save(oldRented);
 
         // Добавить в историю запись о выдаче в прокат
         VehicleRentHistory history = new VehicleRentHistory();
         history.setVehicleRented(newRented);
         history.setEventTime(LocalDateTime.now());
-        history.setLocation(oldRented.getBeginRentalPoint().getLocation());
+        history.setLocation(oldRented.getEndRentalPoint().getLocation());
         historyRepository.save(history);
         return newRented;
     }
@@ -92,7 +94,8 @@ public class VehicleRentalService {
      * @return ТС полученное из аренды
      */
     @Transactional
-    public VehicleRented pullFromRent(Long vehicleId, Long rentalPointId) {
+    public VehicleRented pullFromRent(Long vehicleId, Long rentalPointId, LocalDateTime endDateTime) {
+
         // Найдем ТС по ид
         Optional<Vehicle> optionalVehicle = vehicleRepository.findById(vehicleId);
         if (!optionalVehicle.isPresent())
@@ -105,14 +108,15 @@ public class VehicleRentalService {
             throw new ResourceNotFoundException(MSG_NOT_FOUND_RENTAL_POINT_BY_ID);
         RentalPoint rentalPoint = optionalRentalPoint.get();
 
-        // Последняя запись об аренде ТС
-        Optional<VehicleRented> optionalRented = getLastByVehicleAndParkedIsFalse(vehicle);
+        // Запись об аренде ТС
+        Optional<VehicleRented> optionalRented = vehicleRentedRepository.findByVehicleAndStatus(vehicle, Status.RENTED);
         if (!optionalRented.isPresent())
             throw new ResourceNotFoundException(MSG_NOT_FOUND_RECORD_OF_VEHICLE_RENTAL_IN_RENT);
         VehicleRented rented = optionalRented.get();
 
-        rented.setEndRentTime(LocalDateTime.now());
+        rented.setEndRentTime(endDateTime == null ? LocalDateTime.now() : endDateTime);
         rented.setEndRentalPoint(rentalPoint);
+        rented.setStatus(Status.PARKED);
         vehicleRentedRepository.save(rented);
 
         // Добавить в историю запись о приеме из проката
@@ -126,23 +130,30 @@ public class VehicleRentalService {
     }
 
     /**
-     * Получить последнюю запись ТС в аренде
+     * Получить все ТС с определенным статусом
      *
-     * @param vehicle ТС
-     * @return последняя запись об аренде ТС
+     * @param status статус ТС
+     * @return список ТС
      */
-    private Optional<VehicleRented> getLastByVehicleAndParkedIsFalse(Vehicle vehicle) {
-        List<VehicleRented> rented = vehicleRentedRepository.findByVehicleAndParkedIsFalseOrderByIdDesc(vehicle);
-        return rented.size() > 0 ? Optional.of(rented.get(0)) : Optional.empty();
+    public List<VehicleRented> findAllVehicleRentedByStatus(Status status) {
+        return vehicleRentedRepository.findAllByStatus(status);
     }
 
     /**
-     * Получить список ТС доступных к выдаче в Точке проката
+     * Получить всех зарегистрированных арендаторов
      *
-     * @param rentalPoint точка проката
-     * @return список доступных ТС
+     * @return список арендаторов
      */
-    public Set<VehicleRented> getAvailableForRent(RentalPoint rentalPoint) {
-        return vehicleRentedRepository.getAvailableOnRentalPoint(rentalPoint);
+    public List<Customer> findAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    /**
+     * Получить все пункты проката
+     *
+     * @return список пунктов проката
+     */
+    public List<RentalPoint> findAllRentalPoints() {
+        return rentalPointRepository.findAll();
     }
 }

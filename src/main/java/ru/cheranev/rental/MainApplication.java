@@ -11,17 +11,16 @@ import ru.cheranev.rental.service.DemoService;
 @SpringBootApplication
 public class MainApplication {
 
-    @Autowired
-    private DemoService demoService;
-
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
     }
+
+    @Autowired
+    private DemoService demoService;
 
     @EventListener
     public void handleContextRefreshEvent(ContextRefreshedEvent contextRefreshedEvent) {
         Assert.notNull(demoService);
         demoService.populateDemoExample();
-        demoService.populateVehicleType();
     }
 }

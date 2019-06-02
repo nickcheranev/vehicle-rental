@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * WEB CRUD Vehicle Resource
+ * REST Vehicle Resource
  *
  * @author Cheranev N.
  * created on 29.05.2019.

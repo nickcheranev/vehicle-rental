@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.cheranev.rental.common.Const;
+import ru.cheranev.rental.domain.Status;
 import ru.cheranev.rental.domain.*;
 import ru.cheranev.rental.jpa.*;
 import ru.cheranev.rental.util.GisUtil;
@@ -12,7 +13,6 @@ import ru.cheranev.rental.util.GisUtil;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -26,8 +26,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class DemoService {
 
-    private static final int DEMO_VEHICLE_NUMBER = 100;
-    private static final int DEMO_RENT_COUNT = 3;
+    private static final int DEMO_VEHICLE_NUMBER = 50;
+    private static final int DEMO_RENT_COUNT = 5;
 
     @Autowired
     private VehicleModelRepository vehicleModelRepository;
@@ -45,6 +45,8 @@ public class DemoService {
     private RentalPointRepository rentalPointRepository;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private RentalServiceImpl rentalService;
 
     private List<VehicleModel> allModels;
     private List<RentalPoint> allRentalPoints;
@@ -135,45 +137,27 @@ public class DemoService {
             vehicleRented.setEndRentTime(LocalDateTime.now());
             vehicleRented.setEndRentalPoint(getRandomRentalPoint());
             vehicleRented.setVehicle(vehicle);
-            vehicleRented.setParked(true);
+            vehicleRented.setStatus(Status.PARKED);
             vehicleRentedRepository.save(vehicleRented);
         }
 
-        // выдать в аренду, принять из аренды, сформировать историю перемещения ТС
-        for(int i=0; i<DEMO_RENT_COUNT; i++) {
-            Set<VehicleRented> vehicleRentedSet = vehicleRentedRepository.findAllByParkedIsTrue();
-            pushToRent(vehicleRentedSet);
-        }
+        for (int i = 0; i<DEMO_RENT_COUNT; i++) {
+            // выдать в аренду ТС
+            for(VehicleRented vr : vehicleRentedRepository.findAllByStatus(Status.PARKED)) {
+                rentalService.pushToRent(vr.getVehicle().getId(), getRandomCustomer().getId(), vr.getEndRentTime().plusMinutes(ThreadLocalRandom.current().nextLong(1,4*60)));
+            }
 
-    }
-
-    private void pushToRent(Set<VehicleRented> toRental) throws ParseException {
-        for(VehicleRented oldRent : toRental) {
-            VehicleRented newRent = new VehicleRented();
-            // Заказчика назначаем произвольно. Допустимо для демонстрации.
-            newRent.setCustomer(getRandomCustomer());
-            // выдать в аренду на период от 1 до 5 часов
-            Long rentDurationInMinutes = ThreadLocalRandom.current().nextLong(1, 6*60);
-            // начало аренды установить по истечению нескольких (1-3) часов после слачи
-            LocalDateTime beginRentTime = oldRent.getEndRentTime().plusMinutes(ThreadLocalRandom.current().nextLong(1,4*60));
-            newRent.setBeginRentTime(beginRentTime);
-            newRent.setBeginRentalPoint(oldRent.getEndRentalPoint());
-            LocalDateTime endRentTime = beginRentTime.plusMinutes(rentDurationInMinutes);
-            newRent.setEndRentTime(endRentTime);
-            newRent.setEndRentalPoint(getRandomRentalPoint());
-            newRent.setParked(true);
-            newRent.setVehicle(oldRent.getVehicle());
-            vehicleRentedRepository.save(newRent);
-            // Снятие признака парковки у последней записи аренды ТС
-            oldRent.setParked(false);
-            vehicleRentedRepository.save(oldRent);
-            // Заполнение истории перемещения во время аренды
-            populateHistory(newRent, beginRentTime, endRentTime);
+            // принять ТС из аренды
+            for (VehicleRented vr : vehicleRentedRepository.findAllByStatus(Status.RENTED).subList(0, DEMO_VEHICLE_NUMBER-3)) {
+                VehicleRented pulled = rentalService.pullFromRent(vr.getVehicle().getId(), getRandomRentalPoint().getId(), vr.getBeginRentTime().plusMinutes(ThreadLocalRandom.current().nextLong(1, 6*60)));
+                populateHistory(pulled);
+            }
         }
     }
 
-    private void populateHistory(VehicleRented vehicleRented, final LocalDateTime beginRentTime, final LocalDateTime endRentTime) throws ParseException {
-        LocalDateTime currentTime = beginRentTime;
+    private void populateHistory(VehicleRented vehicleRented) throws ParseException {
+        LocalDateTime currentTime = vehicleRented.getBeginRentTime();
+        LocalDateTime endRentTime = vehicleRented.getEndRentTime();
         String currentLocation = vehicleRented.getBeginRentalPoint().getLocation();
         while(currentTime.isBefore(endRentTime)) {
             VehicleRentHistory history = new VehicleRentHistory();
@@ -230,13 +214,13 @@ public class DemoService {
         return allModels.get(ThreadLocalRandom.current().nextInt(0, allModels.size()));
     }
 
-    public RentalPoint getRandomRentalPoint() {
+    private RentalPoint getRandomRentalPoint() {
         if(allRentalPoints == null)
             allRentalPoints = rentalPointRepository.findAll();
         return allRentalPoints.get(ThreadLocalRandom.current().nextInt(0, allRentalPoints.size()));
     }
 
-    public Customer getRandomCustomer() {
+    private Customer getRandomCustomer() {
         if(allCustomers == null)
             allCustomers = customerRepository.findAll();
         return allCustomers.get(ThreadLocalRandom.current().nextInt(0, allCustomers.size()));
@@ -253,5 +237,4 @@ public class DemoService {
         trackerRepository.save(tracker);
         return tracker;
     }
-
 }

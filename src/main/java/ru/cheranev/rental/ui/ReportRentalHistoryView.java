@@ -2,9 +2,13 @@ package ru.cheranev.rental.ui;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -15,7 +19,10 @@ import ru.cheranev.rental.jpa.ReportRentalHistoryRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Cheranev N.
@@ -117,7 +124,19 @@ public class ReportRentalHistoryView extends VerticalLayout {
         endRentTimeField.setSizeFull();
         endRentTimeField.setPlaceholder(FILTER_PLACEHOLDER);
 
-        add(grid);
+        // детализация истории перемещений ТС при выборе строки отчета
+        grid.setItemDetailsRenderer(new ComponentRenderer<>(report -> {
+            VerticalLayout layout = new VerticalLayout();
+            ListBox<String> historyListBox = new ListBox<>();
+            List<String> content = Arrays.asList(report.getHistory().split(";"));
+            historyListBox.setItems(content.stream().filter(s -> s.length() > 10).collect(Collectors.toList()));
+            layout.add(historyListBox);
+            return layout;
+        }));
+
+        Label label = new Label("Для просмотра истории перемещения ТС выберите соответствующую запись в таблице. Для поиска используйте фильтр по столбцам таблицы и сортировку.");
+
+        add(label, grid);
         setSizeFull();
     }
 }
